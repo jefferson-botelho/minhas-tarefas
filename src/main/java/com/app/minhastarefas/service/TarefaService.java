@@ -17,6 +17,10 @@ public class TarefaService {
         return tarefaRepository.findAll();
     }
 
+    public List<Tarefa> obterTarefaPorDescricao(String descricao) {
+        return tarefaRepository.findByDescricaoLike("%" + descricao + "%");
+    }
+
     public Tarefa iniciarTarefa(Tarefa tarefa) {
         return tarefaRepository.save(tarefa);
     }
