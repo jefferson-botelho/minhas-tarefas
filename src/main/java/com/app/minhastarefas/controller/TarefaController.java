@@ -1,7 +1,6 @@
 package com.app.minhastarefas.controller;
 
 import com.app.minhastarefas.dominio.Tarefa;
-import com.app.minhastarefas.repository.TarefaRepository;
 import com.app.minhastarefas.service.TarefaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,12 +24,20 @@ public class TarefaController {
 
         String descricao = parametros.get("descricao");
         return servico.obterTarefaPorDescricao(descricao);
-
     }
 
+    @GetMapping("/{id}")
+    public Tarefa retornarTarefaPorId(@PathVariable Long id) {
+        return servico.obterTarefaPorId(id);
+    }
 
     @PostMapping
     public void salvarTarefa(@Valid @RequestBody Tarefa tarefa) {
-        servico.iniciarTarefa(tarefa);
+        servico.salvarTarefa(tarefa);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deletarTarefaPorId(@PathVariable Long id) {
+        servico.deletarTarefa(id);
     }
 }
