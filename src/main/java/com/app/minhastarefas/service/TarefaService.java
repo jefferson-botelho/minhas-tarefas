@@ -29,7 +29,8 @@ public class TarefaService {
     }
 
     public Tarefa salvarTarefa(Tarefa tarefa) {
-        return tarefaRepository.save(tarefa);
+        tarefaRepository.save(tarefa);
+        return tarefa;
     }
 
     public void deletarTarefa(Long id) {
@@ -42,6 +43,14 @@ public class TarefaService {
             throw new TarefaStatusException();
         }
         tarefa.setTarefaStatus(TarefaStatus.EM_ANDAMENTO);
+
+        tarefaRepository.save(tarefa);
+        return tarefa;
+    }
+
+    public Tarefa cancelarTarefaPorId(Long id) {
+        Tarefa tarefa = this.obterTarefaPorId(id);
+        tarefa.setTarefaStatus(TarefaStatus.CANCELADA);
 
         tarefaRepository.save(tarefa);
         return tarefa;
