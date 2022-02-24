@@ -15,8 +15,8 @@ public class TarefaCategoria {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotBlank(message = "Campo categoria não pode estar vazio.")
-    @Size(min = 5, max = 50, message = "Campo categoria deve ter entre 5 e 50 letras.")
+    @NotBlank(message = "{tarefa.categoria.not-null}")
+    @Size(min = 5, max = 50, message = "{tarefa.categoria.size}")
     @Column(length = 50)
     private String categoria;
 }

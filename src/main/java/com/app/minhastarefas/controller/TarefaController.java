@@ -6,13 +6,18 @@ import com.app.minhastarefas.dominio.TarefaRequestDTO;
 import com.app.minhastarefas.service.TarefaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/tarefa")
@@ -24,7 +29,7 @@ public class TarefaController {
     @Autowired
     private ModelMapper mapper;
 
-    @GetMapping()
+    @GetMapping
     public List<TarefaDTO> todasTarefas(@RequestParam Map<String, String> parametros){
        List<Tarefa> tarefas = new ArrayList<>();
 
@@ -58,12 +63,15 @@ public class TarefaController {
     }
 
     @GetMapping("/{id}")
-    public TarefaDTO retornarTarefaPorId(@PathVariable Long id) {
+    public EntityModel<TarefaDTO> retornarTarefaPorId(@PathVariable Long id) {
         Tarefa tarefa = servico.obterTarefaPorId(id);
-
         TarefaDTO tarefaDTO = mapper.map(tarefa, TarefaDTO.class);
 
-        return tarefaDTO;
+        EntityModel<TarefaDTO> tarefaModel = EntityModel.of(tarefaDTO,
+                linkTo(methodOn(TarefaController.class).retornarTarefaPorId(id)).withSelfRel(),
+                linkTo(methodOn(TarefaController.class).todasTarefas(new HashMap<>())).withRel("tarefas"));
+
+        return tarefaModel;
     }
 
     @PostMapping
