@@ -1,4 +1,4 @@
-package com.app.minhastarefas;
+package com.app.minhastarefas.controller;
 
 import com.app.minhastarefas.dominio.TarefaCategoria;
 import com.app.minhastarefas.service.TarefaCategoriaService;
@@ -26,7 +26,7 @@ public class TarefaCategoriaController {
     }
 
     @GetMapping("/{id}")
-    public TarefaCategoria retornarTarefaPorId(@PathVariable Long id) {
+    public TarefaCategoria retornarCategoriaPorId(@PathVariable Long id) {
         return service.obterCategoriaPorId(id);
     }
 

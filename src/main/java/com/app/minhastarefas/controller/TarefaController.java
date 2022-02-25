@@ -1,13 +1,16 @@
 package com.app.minhastarefas.controller;
 
+import com.app.minhastarefas.controller.assembler.TarefaModelAssembler;
 import com.app.minhastarefas.dominio.Tarefa;
 import com.app.minhastarefas.dominio.TarefaDTO;
 import com.app.minhastarefas.dominio.TarefaRequestDTO;
 import com.app.minhastarefas.service.TarefaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,56 +32,62 @@ public class TarefaController {
     @Autowired
     private ModelMapper mapper;
 
+    @Autowired
+    private TarefaModelAssembler assembler;
+
     @GetMapping
-    public List<TarefaDTO> todasTarefas(@RequestParam Map<String, String> parametros){
+    public CollectionModel<EntityModel<TarefaDTO>> todasTarefas(@RequestParam Map<String, String> parametros){
        List<Tarefa> tarefas = new ArrayList<>();
 
         if (parametros.isEmpty()) {
             tarefas = servico.obterTodasTarefas();
         } else {
             String descricao = parametros.get("descricao");
-            tarefas =  servico.obterTarefaPorDescricao(descricao);
+            tarefas = servico.obterTarefaPorDescricao(descricao);
         }
 
-        List<TarefaDTO> tarefasDTO = tarefas.stream()
-                .map(tarefa -> mapper.map(tarefa, TarefaDTO.class))
+        List<EntityModel<TarefaDTO>> tarefasDTO = tarefas.stream()
+                .map(assembler::toModel)
                 .collect(Collectors.toList());
 
-        return tarefasDTO;
+        return CollectionModel.of(tarefasDTO,
+                linkTo(methodOn(TarefaController.class).todasTarefas(new HashMap<>())).withSelfRel());
     }
 
     @PutMapping("/{id}/iniciar")
-    public void iniciarTarefa(@PathVariable Long id) {
-        servico.iniciarTarefaPorId(id);
+    public EntityModel<TarefaDTO> iniciarTarefa(@PathVariable Long id) {
+        Tarefa tarefa = servico.iniciarTarefaPorId(id);
+        return assembler.toModel(tarefa);
     }
 
     @PutMapping("/{id}/concluir")
-    public void concluirTarefa(@PathVariable Long id) {
-        servico.concluirTarefaPorId(id);
+    public EntityModel<TarefaDTO> concluirTarefa(@PathVariable Long id) {
+        Tarefa tarefa = servico.concluirTarefaPorId(id);
+        return assembler.toModel(tarefa);
     }
 
     @PutMapping("/{id}/cancelar")
-    public void cancelarTarefa(@PathVariable Long id) {
-        servico.cancelarTarefaPorId(id);
+    public EntityModel<TarefaDTO> cancelarTarefa(@PathVariable Long id) {
+        Tarefa tarefa = servico.cancelarTarefaPorId(id);
+        return assembler.toModel(tarefa);
     }
 
     @GetMapping("/{id}")
     public EntityModel<TarefaDTO> retornarTarefaPorId(@PathVariable Long id) {
         Tarefa tarefa = servico.obterTarefaPorId(id);
-        TarefaDTO tarefaDTO = mapper.map(tarefa, TarefaDTO.class);
-
-        EntityModel<TarefaDTO> tarefaModel = EntityModel.of(tarefaDTO,
-                linkTo(methodOn(TarefaController.class).retornarTarefaPorId(id)).withSelfRel(),
-                linkTo(methodOn(TarefaController.class).todasTarefas(new HashMap<>())).withRel("tarefas"));
-
-        return tarefaModel;
+        return assembler.toModel(tarefa);
     }
 
     @PostMapping
-    public TarefaDTO salvarTarefa(@Valid @RequestBody TarefaRequestDTO tarefaReq) {
+    public ResponseEntity<EntityModel<TarefaDTO>> salvarTarefa(@Valid @RequestBody TarefaRequestDTO tarefaReq) {
         Tarefa tarefa = mapper.map(tarefaReq, Tarefa.class);
+        Tarefa tarefaSalva = servico.salvarTarefa(tarefa);
 
-        return mapper.map(servico.salvarTarefa(tarefa), TarefaDTO.class);
+        EntityModel<TarefaDTO> tarefaModel = assembler.toModel(tarefaSalva);
+
+        return ResponseEntity
+                .created(tarefaModel.getRequiredLink(IanaLinkRelations.SELF)
+                        .toUri()).body(tarefaModel);
     }
 
     @DeleteMapping("/{id}")

@@ -44,16 +44,14 @@ public class TarefaService {
         }
         tarefa.setTarefaStatus(TarefaStatus.EM_ANDAMENTO);
 
-        tarefaRepository.save(tarefa);
-        return tarefa;
+        return tarefaRepository.save(tarefa);
     }
 
     public Tarefa cancelarTarefaPorId(Long id) {
         Tarefa tarefa = this.obterTarefaPorId(id);
         tarefa.setTarefaStatus(TarefaStatus.CANCELADA);
 
-        tarefaRepository.save(tarefa);
-        return tarefa;
+       return tarefaRepository.save(tarefa);
     }
 
     public Tarefa concluirTarefaPorId(Long id) {
@@ -63,7 +61,6 @@ public class TarefaService {
         }
         tarefa.setTarefaStatus(TarefaStatus.CONCLUIDA);
 
-        tarefaRepository.save(tarefa);
-        return tarefa;
+        return tarefaRepository.save(tarefa);
     }
 }

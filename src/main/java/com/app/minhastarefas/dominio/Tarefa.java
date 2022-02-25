@@ -25,7 +25,6 @@ public class Tarefa {
     @Enumerated(EnumType.STRING)
     private TarefaStatus tarefaStatus = TarefaStatus.ABERTA;
 
-    @FutureOrPresent(message = "{tarefa.descricao.future-or-present}.")
     private LocalDate data;
 
     @ManyToOne
