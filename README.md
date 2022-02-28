@@ -15,5 +15,5 @@ Cada **Usuário** possui suas **Tarefas** e cada tarefa uma **Categoria**.
 3. Adicione sua senha do mySQL em  `spring.datasource.password=` no [application-prod.properties](src/main/resources/application-prod.properties).
 4. Ao rodar a primeira vez em produção, sugiro descomentar o `@Profile("dev")` no [CarregaBaseDeDados](src/main/java/com/app/minhastarefas/config/CarregaBaseDeDados.java) para gerar os primeiros dados no seu banco de dados e assim você usar como modelo para os outros POSTs.
 5. Rodar direto da IDE a classe `MinhasTarefasApplication`.
-6. Acessar [http://localhost:8080/minhastarefas/tarefas](http://localhost:8080/minhastarefas/tarefas)
+6. Acessar [http://localhost:8080/minhastarefas/tarefa](http://localhost:8080/minhastarefas/tarefas)
 **As rotas estão nas controllers.**
